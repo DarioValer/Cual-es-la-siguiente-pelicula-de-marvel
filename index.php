@@ -7,10 +7,18 @@ $data = json_decode($result, true);
 $data2= $data["following_production"];
 //print_r('<pre>');
 //var_dump($data);
-$id = isset($_GET['id']) ? intval($_GET['id']) : 1;
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 // Determinar qué datos usar en función del ID
-$pelicula = ($id === 1) ? $data : $data2;
+//$pelicula = ($id === 1) ? $data : $data2;
+$valido = true;
+if($id === 1){
+    $pelicula = $data;
+}elseif($id === 2) {
+    $pelicula = $data2;
+}else{
+    $valido = false;
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,20 +73,22 @@ $pelicula = ($id === 1) ? $data : $data2;
             }
 
             .siguienteBoton{
-                display: none;
-                opacity: 0;
+                /*display: none;
+                opacity: 0;*/
                 transition: 2s opacity;
                 font-size: 40px;
                 padding: 20px;
                 background-color: transparent;
                 border-radius: 40px;
                 border: 1px solid black;
-                width: 5%;
+                /*width: 5%;*/
             }
 
             .atrasBoton{
+                /*<?php if(intval($_GET) === 0) { ?>
                 display: none;
                 opacity: 0;
+                <?php } ?>*/
                 transition: 2s opacity;
                 font-size: 40px;
                 padding: 20px;
@@ -93,8 +103,11 @@ $pelicula = ($id === 1) ? $data : $data2;
             }
 
             .info-izq{
+                /*<?php if(intval($_GET) === 0) { ?>
                 display: none;
                 opacity: 0;
+                <?php } ?>*/
+                
                 transition: 2s opacity;
                 padding-right: 30px;
                 width: 50%;
@@ -119,8 +132,8 @@ $pelicula = ($id === 1) ? $data : $data2;
             }
 
             .pelicula-actual{
-                display: none;
-                opacity: 0;
+                /*display: none;
+                opacity: 0;*/
                 transition: 2s opacity;
                 position: relative;
             }
@@ -132,43 +145,53 @@ $pelicula = ($id === 1) ? $data : $data2;
         </style>
     </head>
     <body class="centrado">
-        <h1 class="titulo">¿Cuál es la siguiente película de <span style="background-color: red; color: white; padding:0px 8px;">MARVEL</span>?</h1>
-        <button id="revelarBoton">REVELAR</button>
-        <button class="atrasBoton">VOLVER</button>
-        <div class="info-izq">
-            <h2 class="titulo-pelicula-actual"><?= $pelicula["title"]?></h2>
-            <div class="bloque-info">
-                <h3>Fecha de estreno: <span style="font-family: 'Barlow', sans-serif; font-weight: 400;"><?= $pelicula["release_date"]; ?></span></h3>
-                <h3>Tipo: <span style="font-family: 'Barlow', sans-serif; font-weight: 400;"><?= $pelicula["type"]; ?></span></h3>
-                <h3>Descripción: <span class="descripcion-value" style="font-family: 'Barlow', sans-serif; font-weight: 400;"><?= $pelicula["overview"];?></span></h3>
+        <?php (intval($_GET['id'])) === 0 ? $mostrar = true : $mostrar = false  ?>
+        <?php if($mostrar){ ?>
+            <h1 class="titulo">¿Cuál es la siguiente película de <span style="background-color: red; color: white; padding:0px 8px;">MARVEL</span>?</h1>
+            <button id="revelarBoton">REVELAR</button>
+        <?php } ?>
+        <?php if($valido){ ?> 
+            <button class="atrasBoton">VOLVER</button>
+            <div class="info-izq">
+                <h2 class="titulo-pelicula-actual"><?= $pelicula["title"];?></h2>
+                <div class="bloque-info">
+                    <h3>Fecha de estreno: <span style="font-family: 'Barlow', sans-serif; font-weight: 400;"><?= $pelicula["release_date"]; ?></span></h3>
+                    <h3>Tipo: <span style="font-family: 'Barlow', sans-serif; font-weight: 400;"><?= $pelicula["type"]; ?></span></h3>
+                    <h3>Descripción: <span class="descripcion-value" style="font-family: 'Barlow', sans-serif; font-weight: 400;"><?= $pelicula["overview"];?></span></h3>
+                </div>
+                
+                
             </div>
-            
-            
-        </div>
-        <div class="pelicula-actual centrado">
-            <img src="<?php echo $data["poster_url"]?>" alt="">
-            <h2 class="faltan-dias">FALTAN <span style="background-color: red; color: white; padding: 0 8px;"><?= $pelicula["days_until"] ?></span> DÍAS</h2>
-            
-        </div>
-        <button class="siguienteBoton">SIGUIENTE PELÍCULA</button>
+            <div class="pelicula-actual centrado">
+                <img src="<?php echo $pelicula["poster_url"];?>" alt="">
+                <h2 class="faltan-dias">FALTAN <span style="background-color: red; color: white; padding: 0 8px;"><?= $pelicula["days_until"]; ?></span> DÍAS</h2>
+                
+            </div>
+            <button class="siguienteBoton">SIGUIENTE PELÍCULA</button>
+        <?php } ?>
         <script> 
             function actualizarParametroURL(parametro, valor) {
                 const url = new URL(window.location);
                 url.searchParams.set(parametro, valor);
                 window.history.pushState({}, '', url);
+
+                //location.reload();
             }
         </script>
         <script>
-            let boton = document.querySelector('#revelarBoton');
+            //actualizarParametroURL('id', 0);
+            /*let boton = document.querySelector('#revelarBoton');
             let botonSiguiente = document.querySelector('.siguienteBoton');
             let botonAtras = document.querySelector('.atrasBoton');
             let peliculaActual = document.querySelector('.pelicula-actual');
             let titulo = document.querySelector('.titulo');
             let infoIzq = document.querySelector('.info-izq');
-            let body = document.querySelector('body');
+            let body = document.querySelector('body');*/
 
-            boton.addEventListener('click', () => {
-                body.style.flexDirection = 'row';
+            //boton.addEventListener('click', () => {
+               // actualizarParametroURL('id', 1);
+               // location.reload();
+                /*body.style.flexDirection = 'row';
                 body.style.justifyContent = 'space-evenly';
                 boton.style.display = 'none';
                 titulo.style.display = 'none';
@@ -178,27 +201,59 @@ $pelicula = ($id === 1) ? $data : $data2;
                     peliculaActual.classList.add('revelado'); // Aplica la transición de opacidad
                     infoIzq.classList.add('revelado');
                     botonSiguiente.classList.add('revelado');
-                }, 5); 
-
+                }, 5); */
                 
-            });
-            botonSiguiente.addEventListener('click', () => {
-                botonSiguiente.style.display = 'none';
-                peliculaActual.style.display = 'none';
-                infoIzq.style.display = 'none';
-                botonSiguiente.style.display = 'none';
+                
+            //});
+            //botonSiguiente.addEventListener('click', () => {
+            //    console.log('HOLAA');
+                /*botonSiguiente.style.display = 'none';
+           //     peliculaActual.style.display = 'none';
+          //      infoIzq.style.display = 'none';
+         //       botonSiguiente.style.display = 'none';
                 botonAtras.style.display = 'block'; 
                 //peliculaSiguiente.style.display = 'block'; // Asegura que el elemento se muestre
                 setTimeout(function() {
                     //peliculaSiguiente.classList.add('revelado'); // Aplica la transición de opacidad
                     //infoIzqSiguiente.classList.add('revelado');
                     botonAtras.classList.add('revelado');
-                }, 5); 
-
-                actualizarParametroURL('id', 2);
-
+                }, 5); */
+            //    actualizarParametroURL('id', 1);
+            //    location.reload();
                 
-            });
-        </script>
+            //});
+
+
+
+
+
+
+            document.addEventListener('DOMContentLoaded', function() {
+            function actualizarParametroURL(parametro, valor) {
+                const url = new URL(window.location);
+                url.searchParams.set(parametro, valor);
+                window.history.pushState({}, '', url);
+            }
+
+            const botonRevelar = document.getElementById('revelarBoton');
+            const botonSiguiente = document.querySelector('.siguienteBoton');
+
+            if (botonRevelar) {
+                botonRevelar.addEventListener('click', function() {
+                    actualizarParametroURL('id', 1);
+                    location.reload();
+                });
+            }
+
+            if (botonSiguiente) {
+                botonSiguiente.addEventListener('click', function() {
+                    const id = parseInt(new URLSearchParams(window.location.search).get('id'), 10);
+                    const siguienteId = id + 1;
+                    actualizarParametroURL('id', siguienteId);
+                    location.reload();
+                });
+            }
+        });
+    </script>
     </body>
 </html>
